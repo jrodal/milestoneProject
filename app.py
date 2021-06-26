@@ -12,6 +12,7 @@ import bokeh as b
 import bokeh.plotting as bp
 import streamlit as st
 import json
+import os
 
 #headers
 st.title('Daily Closing Values')
@@ -42,7 +43,7 @@ colors= ['red', 'green', 'blue']
 if complete:
     
     timeSampling = 'TIME_SERIES_DAILY'
-    key = '2H1YICB3NNJQ4WRX'
+    key = os.environ['key']
     p = bp.figure(title="Daily Closing Values", x_axis_type='datetime', 
                   y_axis_label= y_scale)
     

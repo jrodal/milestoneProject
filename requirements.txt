@@ -5,3 +5,4 @@ python-dotenv
 altair
 bokeh==2.2.2
 requests
+os
