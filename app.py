@@ -13,38 +13,32 @@ import bokeh.plotting as bp
 import streamlit as st
 import json
 
+#headers
 st.title('Daily Closing Values')
-
 st.write('An Interactive Example, Using Streamlit and Bokeh')
 
-#st.header('Please Type in Up to 3 Stock Ticker (e.g. AMZN)')
-
+#request user input
 numStocks = None
-
 y_scale = st.sidebar.selectbox(
     'Value scale', ['Dollar value', 'Percent Growth'])
-#st.sidebar.header('How many stocks would you like to compare?')
 numStocks = st.sidebar.selectbox(
     'How many stocks would you like to compare?', [1, 2, 3])
-
 ticker1, ticker2, ticker3 = None, None, None
 if numStocks:
-    #st.sidebar.header('Please Input Your Stock Tickers')
     ticker1 = st.sidebar.text_input('Ticker symbol (e.g. UAL)')
     if numStocks>=2:
         ticker2 = st.sidebar.text_input('Ticker symbol (e.g. DAL)')
     if numStocks==3:
         ticker3 = st.sidebar.text_input('Ticker symbol (e.g. AAL)')
-
 complete = False
 complete = st.sidebar.button('Plot data')
 
+#set up
 tickersCompleted = [ticker for ticker in [ticker1, ticker2, ticker3] 
                     if ticker is not None]
-
 colors= ['red', 'green', 'blue']
 
-#if len(tickersCompleted) == numStocks:
+#query API and build plot
 if complete:
     
     timeSampling = 'TIME_SERIES_DAILY'
@@ -57,10 +51,16 @@ if complete:
                +timeSampling+'&symbol='+ticker+'&apikey='+key)
 
         response = requests.get(url)
-
         responsedata = response.json()
         #metadata = responsedata['Meta Data']
-        data = responsedata['Time Series (Daily)']
+        try:
+            data = responsedata['Time Series (Daily)']
+        except KeyError:
+            st.markdown('')
+            st.markdown('Oops, something went wrong.')
+            st.markdown('Please hit refresh and try again.')
+            complete=False
+            break
 
         df = pd.DataFrame.from_dict(data).T
         df.index = pd.to_datetime(df.index)
@@ -70,19 +70,14 @@ if complete:
         else:
             initialValue = closingValues[-1]
             y = closingValues/initialValue
-        
+            
         p.line(df.index, y, legend_label=ticker, 
                 line_color=colors[i])
         
-    # item_text = json.dumps(b.embed.json_item(p, 'my_plot'))
-    # item = JSON.parse(item_text);
-    # b.embed.embed_item(item, 'my_plot')
-    #st.write(p)
-    #bp.show(p)
-    
-    y_scale, numStocks, ticker1, ticker2, ticker3, tickersCompleted, complete, data, df, y, response, responsedata, url = None, None, None, None, None, None, None, None, None, None, None, None, None
-
+#display plot    
+if complete:
     st.bokeh_chart(p)
+complete = False
     
         
 
