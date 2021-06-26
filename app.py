@@ -21,7 +21,7 @@ st.write('An Interactive Example, Using Streamlit and Bokeh')
 #request user input
 numStocks = None
 y_scale = st.sidebar.selectbox(
-    'Value scale', ['Dollar value', 'Percent Growth'])
+    'Value scale', ['Dollar Value', 'Percent Growth'])
 numStocks = st.sidebar.selectbox(
     'How many stocks would you like to compare?', [1, 2, 3])
 ticker1, ticker2, ticker3 = None, None, None
@@ -64,7 +64,7 @@ if complete:
         df = pd.DataFrame.from_dict(data).T
         df.index = pd.to_datetime(df.index)
         closingValues = df['4. close'].astype(float)
-        if y_scale == 'Dollar value':
+        if y_scale == 'Dollar Value':
             y = closingValues
             p.yaxis.formatter = b.models.NumeralTickFormatter(format='$0')
         else:
