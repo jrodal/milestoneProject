@@ -26,11 +26,11 @@ numStocks = st.sidebar.selectbox(
     'How many stocks would you like to compare?', [1, 2, 3])
 ticker1, ticker2, ticker3 = None, None, None
 if numStocks:
-    ticker1 = st.sidebar.text_input('Ticker symbol (e.g. UAL)')
+    ticker1 = st.sidebar.text_input('Ticker symbol (e.g. UAL)').upper()
     if numStocks>=2:
-        ticker2 = st.sidebar.text_input('Ticker symbol (e.g. DAL)')
+        ticker2 = st.sidebar.text_input('Ticker symbol (e.g. DAL)').upper()
     if numStocks==3:
-        ticker3 = st.sidebar.text_input('Ticker symbol (e.g. AAL)')
+        ticker3 = st.sidebar.text_input('Ticker symbol (e.g. AAL)').upper()
 complete = False
 complete = st.sidebar.button('Plot data')
 
@@ -38,15 +38,13 @@ complete = st.sidebar.button('Plot data')
 tickersCompleted = [ticker for ticker in [ticker1, ticker2, ticker3] 
                     if ticker is not None]
 colors= ['red', 'green', 'blue']
-
-#query API and build plot
-if complete:
-    
-    timeSampling = 'TIME_SERIES_DAILY'
-    key = os.environ['key']
-    p = bp.figure(title="Daily Closing Values", x_axis_type='datetime', 
+timeSampling = 'TIME_SERIES_DAILY'
+key = os.environ['key']
+p = bp.figure(title="Daily Closing Values", x_axis_type='datetime', 
                   y_axis_label= y_scale)
     
+#query API and build plot
+if complete:
     for i,ticker in enumerate(tickersCompleted):
         url = ('https://www.alphavantage.co/query?function='
                +timeSampling+'&symbol='+ticker+'&apikey='+key)
@@ -68,9 +66,11 @@ if complete:
         closingValues = df['4. close'].astype(float)
         if y_scale == 'Dollar value':
             y = closingValues
+            p.yaxis.formatter = b.models.NumeralTickFormatter(format='$0')
         else:
             initialValue = closingValues[-1]
             y = closingValues/initialValue
+            p.yaxis.formatter = b.models.NumeralTickFormatter(format='0%')
             
         p.line(df.index, y, legend_label=ticker, 
                 line_color=colors[i])
