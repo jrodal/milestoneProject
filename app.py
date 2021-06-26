@@ -69,7 +69,7 @@ if complete:
             p.yaxis.formatter = b.models.NumeralTickFormatter(format='$0')
         else:
             initialValue = closingValues[-1]
-            y = closingValues/initialValue
+            y = closingValues/initialValue - 1
             p.yaxis.formatter = b.models.NumeralTickFormatter(format='0%')
             
         p.line(df.index, y, legend_label=ticker, 
